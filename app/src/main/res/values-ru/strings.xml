@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода</string>
+    <string name="navigation_drawer_open">Открыть панель навигации</string>
+    <string name="navigation_drawer_close">Закрыть панель навигации</string>
+    <string name="nav_header_title">Дмитрий Ляпков</string>
+    <string name="nav_header_subtitle">Lyapkov.Dmitry@gmail.com</string>
+    <string name="nav_header_desc">Заголовок навигации</string>
+    <string name="action_settings">Настройки</string>
+
+    <string name="menu_home">Домой</string>
+    <string name="menu_gallery">Галерея</string>
+    <string name="menu_slideshow">Слайд-шоу</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_about_developer">О разработчике</string>
+    <string name="menu_send">Отправить</string>
+    <string name="add">Добавить</string>
+    <string name="update">Обновить</string>
+    <string name="remove">Удалить</string>
+    <string name="clear">Очистить</string>
+    <string name="search">Поиск</string>
+    <string name="message">Я учусь андроид разработке!</string>
+    <string name="button">Успехов!</string>
+</resources>
