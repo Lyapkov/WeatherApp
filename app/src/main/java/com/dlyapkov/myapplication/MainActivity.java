@@ -6,33 +6,31 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dlyapkov.myapplication.interfaces.OpenWeather;
+import com.dlyapkov.myapplication.Services.MainService;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
-import java.io.BufferedReader;
-import java.util.stream.Collectors;
-
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DialogBuilderFragment dlgCustom;
-    private OpenWeather openWeather;
-    private SharedPreferences sharedPref;
+    private boolean isBound = false;
+    private MainService.ServiceBinder boundService;
 
     ImageView img;
     TextView city;
@@ -54,12 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initDrawer(toolbar);
         dlgCustom = new DialogBuilderFragment();
 
-        //final ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
-
-        Picasso.get()
-                .load("https://images.unsplash.com/photo-1567449303183-ae0d6ed1498e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80")
-                .transform(new CircleTransformation())
-                .into(img);
+        setImage();
 
         Http.initRetrofit(this);
         Http.requestRetrofit("moscow", BuildConfig.WEATHER_API_KEY);
@@ -112,7 +105,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             default:
                 return true;
         }
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isBound) {
+            unbindService(boundServiceConnection);
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -145,6 +145,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setImage() {
-
+        Picasso.get()
+                .load("https://images.unsplash.com/photo-1567449303183-ae0d6ed1498e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80")
+                .transform(new CircleTransformation())
+                .into(img);
     }
+
+    private ServiceConnection boundServiceConnection = new ServiceConnection() {
+
+        // При соединении с сервисом
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            boundService = (MainService.ServiceBinder) service;
+            isBound = boundService != null;
+        }
+
+        // При разрыве соединения с сервисом
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+            boundService = null;
+        }
+    };
 }
