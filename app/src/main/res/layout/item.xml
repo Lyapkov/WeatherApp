@@ -7,8 +7,13 @@
     app:cardCornerRadius="10sp"
     app:layout_constraintStart_toEndOf="parent" >
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/cityView"
+        android:id="@+id/textCity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -16,12 +21,58 @@
         android:layout_margin="30sp"
         android:text="Moscow" />
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <TextView
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="120sp"
         android:layout_gravity="center_horizontal"
         android:src="@mipmap/night_full_moon_rain" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/pressureView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300sp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="50sp"
+        android:text="pressure" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/humidityView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300sp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="50sp"
+        android:text="humidity" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tempMinView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300sp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="50sp"
+        android:text="temp_min" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tempMaxView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300sp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="50sp"
+        android:text="temp_max" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/descriptionView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300sp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="50sp"
+        android:text="description" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/temperatureView"
@@ -32,148 +83,6 @@
         android:textSize="50sp"
         android:text="30 C" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="450sp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10sp"
-                android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/dateDay1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textSize="15sp"
-                android:text="12.12.2020" />
-
-
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/temperatureDay1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textSize="25sp"
-                android:text="30 C" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/pressureDay1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textSize="20sp"
-                android:text="956" />
-        </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10sp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/dateDay2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="15sp"
-                    android:text="13.12.2020" />
-
-
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/temperatureDay2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="25sp"
-                    android:text="30 C" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/pressureDay2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:text="956" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10sp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/dateDay3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="15sp"
-                    android:text="13.12.2020" />
-
-
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/temperatureDay3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="25sp"
-                    android:text="30 C" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/pressureDay3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:text="956" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10sp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/dateDay4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="15sp"
-                    android:text="13.12.2020" />
-
-
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/temperatureDay4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="25sp"
-                    android:text="30 C" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/pressureDay4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:text="956" />
-            </LinearLayout>
     </LinearLayout>
-    </ScrollView>
 
 </androidx.cardview.widget.CardView>

@@ -6,8 +6,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -19,9 +22,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dlyapkov.myapplication.Entity.Weather;
 import com.dlyapkov.myapplication.Services.MainService;
+import com.dlyapkov.myapplication.database.App;
+import com.dlyapkov.myapplication.database.EducationDao;
+import com.dlyapkov.myapplication.database.EducationSource;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
@@ -31,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DialogBuilderFragment dlgCustom;
     private boolean isBound = false;
     private MainService.ServiceBinder boundService;
+    private EducationSource educationSource;
+    private WeatherRecyclerAdapter adapter;
 
     ImageView img;
     TextView city;
@@ -45,17 +55,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         city = findViewById(R.id.textView2);
         temperature = findViewById(R.id.textView3);
-        img = findViewById(R.id.image);
+
 
 
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
         dlgCustom = new DialogBuilderFragment();
-
-        setImage();
+        //setImage();
 
         Http.initRetrofit(this);
         Http.requestRetrofit("moscow", BuildConfig.WEATHER_API_KEY);
+
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(linearLayout);
+        EducationDao educationDao = App.getInstance().getEducationDao();
+        educationSource = new EducationSource(educationDao);
+
+        adapter = new WeatherRecyclerAdapter(educationSource, this);
+        recyclerView.setAdapter(adapter);
     }
 
     private Toolbar initToolbar() {
@@ -99,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add:
+
                 return true;
             case R.id.action_settings:
                 return true;
@@ -167,4 +187,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             boundService = null;
         }
     };
+
+    public void addWeather(Weather weather) {
+        educationSource.addWeather(weather);
+    }
 }
