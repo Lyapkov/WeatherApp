@@ -6,41 +6,45 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ComponentName;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dlyapkov.myapplication.Entity.Weather;
-import com.dlyapkov.myapplication.Services.MainService;
 import com.dlyapkov.myapplication.database.App;
 import com.dlyapkov.myapplication.database.EducationDao;
 import com.dlyapkov.myapplication.database.EducationSource;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.Picasso;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DialogBuilderFragment dlgCustom;
     private boolean isBound = false;
-    private MainService.ServiceBinder boundService;
     private EducationSource educationSource;
     private WeatherRecyclerAdapter adapter;
+    private BroadcastReceiver internetReceiver = new InternetReceiver();
 
     ImageView img;
     TextView city;
@@ -55,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         city = findViewById(R.id.textView2);
         temperature = findViewById(R.id.textView3);
+
+        registerReceiver(internetReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+
 
 
 
@@ -75,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         adapter = new WeatherRecyclerAdapter(educationSource, this);
         recyclerView.setAdapter(adapter);
+
+        initGetToken();
+        initNotificationChannel();
     }
 
     private Toolbar initToolbar() {
@@ -127,14 +137,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (isBound) {
-            unbindService(boundServiceConnection);
-        }
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -155,6 +157,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(internetReceiver);
+    }
+
     public void displayWeather(String textCity, String textTemperature) {
         city.setText(textCity);
         temperature.setText(textTemperature);
@@ -171,24 +179,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(img);
     }
 
-    private ServiceConnection boundServiceConnection = new ServiceConnection() {
-
-        // При соединении с сервисом
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            boundService = (MainService.ServiceBinder) service;
-            isBound = boundService != null;
-        }
-
-        // При разрыве соединения с сервисом
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-            boundService = null;
-        }
-    };
-
     public void addWeather(Weather weather) {
         educationSource.addWeather(weather);
     }
+
+    private void initGetToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("PushMessage", "getInstanceId failed", task.getException());
+                            return;
+                        }
+                    }
+                });
+    }
+
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("2", "name", importance);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
