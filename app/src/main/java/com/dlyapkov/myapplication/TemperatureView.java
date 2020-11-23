@@ -25,7 +25,7 @@ public class TemperatureView extends View {
     private int level = 20;
 
     private final static int padding = 10;
-    private final static int round = 200;
+    private final static int round = 150;
     private final static int headWidth = 10;
     private final static int headHeight = 10;
 
@@ -74,20 +74,19 @@ public class TemperatureView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         width = w - getPaddingLeft() - getPaddingRight();
         height = h - getPaddingTop() - getPaddingBottom();
-        temperatureRectangle.set(padding,
-                padding,
-                width - padding - headWidth,
-                height  - padding);
+        temperatureRectangle.set(getPaddingLeft(),
+                getPaddingTop(),
+                getWidth() - getPaddingRight(),
+                getHeight()  - getPaddingBottom());
 //        headRectangle.set(width - padding,
 //                2 * padding - headWidth + padding,
 //                width - padding,
 //                height - 2 * padding);
-        levelRectangle.set(width - 3 * padding,
-//                2 * padding,
-                2 * (int) ((width - 2 * padding - headWidth) * ((double) level / (double) 100)),
-                2 * padding,
-//                (int) ((width - 2 * padding - headWidth) * ((double) level / (double) 100)),
-                height - 2 * padding);
+        levelRectangle.set(getPaddingLeft() + padding,
+                (int) (getPaddingTop() + padding + (getHeight() * (100 - level) / 100)),
+                //2 * (int) ((width - 2 * padding - headWidth) * ((double) level / (double) 100)),
+                getWidth() - getPaddingRight() - padding,
+                getHeight() - getPaddingBottom() - padding);
     }
 
     @Override
