@@ -1,4 +1,4 @@
-package com.dlyapkov.myapplication.Entity;
+package com.dlyapkov.myapplication.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

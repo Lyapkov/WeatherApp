@@ -1,8 +1,8 @@
 package com.dlyapkov.myapplication;
 
-import android.os.Handler;
-
-import com.dlyapkov.myapplication.Entity.WeatherRequest;
+import com.dlyapkov.myapplication.Entity.Weather;
+import com.dlyapkov.myapplication.database.EducationSource;
+import com.dlyapkov.myapplication.model.WeatherRequest;
 import com.dlyapkov.myapplication.interfaces.OpenWeather;
 
 import retrofit2.Call;
@@ -33,10 +33,23 @@ public class Http {
     public static void requestRetrofit(String city, String keyApi) {
         openWeather.loadWeather(city, keyApi)
                 .enqueue(new Callback<WeatherRequest>() {
+                    Weather weather;
+
                     @Override
                     public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
                         if (response.body() != null) {
-                            activity.displayWeather(response.body().getName(), Float.toString(response.body().getMain().getTemp()));
+                            weather = new Weather();
+                            weather.city = response.body().getName();
+                            weather.description = response.body().getWeather()[0].getDescription();
+                            weather.humidity = response.body().getMain().getHumidity();
+                            weather.pressure = response.body().getMain().getPressure();
+                            weather.temp = response.body().getMain().getTemp();
+                            weather.temp_min = response.body().getMain().getTemp_min();
+                            weather.temp_max = response.body().getMain().getTemp_max();
+                            weather.icon = "https://images.unsplash.com/photo-1567449303183-ae0d6ed1498e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80";
+                            activity.addWeather(weather);
+                            activity.addWeather(weather);
+                            //activity.displayWeather(response.body().getName(), Float.toString(response.body().getMain().getTemp()));
                         }
                     }
 

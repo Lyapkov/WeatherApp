@@ -1,51 +1,53 @@
 package com.dlyapkov.myapplication.Entity;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@Entity(indices = {@Index(value = {Weather.CITY})})
 public class Weather {
-    @SerializedName("id")
-    @Expose
-    private int id;
-    @SerializedName("main")
-    @Expose
-    private String main;
-    @SerializedName("description")
-    @Expose
-    private String description;
-    @SerializedName("icon")
-    @Expose
-    private String icon;
 
-    public int getId() {
-        return id;
-    }
+    public final static String ID = "id";
+    public final static String CITY = "city";
+    public final static String DESCRIPTION = "description";
+    public final static String ICON = "icon";
+    public final static String TEMP = "temperature";
+    public final static String PRESSURE = "pressure";
+    public final static String HUMIDITY = "humidity";
+    public final static String TEMP_MIN = "temp_min";
+    public final static String TEMP_MAX = "temp_max";
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
-    public String getMain() {
-        return main;
-    }
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = ID)
+    public long id;
 
-    public void setMain(String main) {
-        this.main = main;
-    }
+    @ColumnInfo(name = CITY)
+    public String city;
 
-    public String getDescription() {
-        return description;
-    }
+    @ColumnInfo(name = DESCRIPTION)
+    public String description;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    @ColumnInfo(name = ICON)
+    public String icon;
 
-    public String getIcon() {
-        return icon;
-    }
+    @ColumnInfo(name = TEMP)
+    public float temp;
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
+    @ColumnInfo(name = PRESSURE)
+    public int pressure;
+
+    @ColumnInfo(name = HUMIDITY)
+    public int humidity;
+
+    @ColumnInfo(name = TEMP_MIN)
+    public float temp_min;
+
+    @ColumnInfo(name = TEMP_MAX)
+    public float temp_max;
 }

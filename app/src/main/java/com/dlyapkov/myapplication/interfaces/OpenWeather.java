@@ -1,9 +1,8 @@
 package com.dlyapkov.myapplication.interfaces;
 
 import retrofit2.Call;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
-import com.dlyapkov.myapplication.Entity.WeatherRequest;
+import com.dlyapkov.myapplication.model.WeatherRequest;
 import retrofit2.http.GET;
 
 public interface OpenWeather {
