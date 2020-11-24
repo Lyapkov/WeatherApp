@@ -13,8 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Http {
     private static OpenWeather openWeather;
-    //private static WeatherRequest request;
-    //private static Handler handler;
     private static MainActivity activity;
 
     private static final String TAG = "WEATHER";

@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dlyapkov.myapplication.Entity.Weather;
+import com.dlyapkov.myapplication.Services.HttpsService;
 import com.dlyapkov.myapplication.database.App;
 import com.dlyapkov.myapplication.database.EducationDao;
 import com.dlyapkov.myapplication.database.EducationSource;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(internetReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
 
 
+        startService(new Intent(this, HttpsService.class));
 
 
         Toolbar toolbar = initToolbar();
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //setImage();
 
         Http.initRetrofit(this);
-        Http.requestRetrofit("moscow", BuildConfig.WEATHER_API_KEY);
+        //Http.requestRetrofit("moscow", BuildConfig.WEATHER_API_KEY);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopService(new Intent(this, HttpsService.class));
         unregisterReceiver(internetReceiver);
     }
 

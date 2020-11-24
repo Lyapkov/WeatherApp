@@ -28,6 +28,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name=".Services.HttpsService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>
