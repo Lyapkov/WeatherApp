@@ -133,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 return true;
             case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return true;
@@ -144,14 +146,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_home:
-                //Snackbar.make(MainActivity.this, "asd", Snackbar.LENGTH_LONG).show();
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_maps:
+                Intent mapsIntent = new Intent(this, MapsActivity.class);
+                startActivity(mapsIntent);
+                break;
+            case R.id.nav_settings:
+                Intent settingIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingIntent);
                 break;
             case R.id.nav_about_developer:
                 dlgCustom.show(getSupportFragmentManager(), "about the Developer");
-                break;
-            case R.id.nav_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
                 break;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
