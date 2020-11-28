@@ -67,6 +67,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startService(new Intent(this, HttpsService.class));
 
 
+//        ImageView image = findViewById(R.id.image);
+//        Picasso.get()
+//                .load("https://images.unsplash.com/photo-1567449303183-ae0d6ed1498e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80")
+//                //.transform(new CircleTransformation())
+//                .into(image);
+//
+
+
+
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
         dlgCustom = new DialogBuilderFragment();
@@ -180,13 +189,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void displayError(String error) {
         Snackbar.make(findViewById(R.id.constraintLayout), error, Snackbar.LENGTH_LONG).show();
-    }
-
-    private void setImage() {
-        Picasso.get()
-                .load("https://images.unsplash.com/photo-1567449303183-ae0d6ed1498e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80")
-                .transform(new CircleTransformation())
-                .into(img);
     }
 
     public void addWeather(Weather weather) {

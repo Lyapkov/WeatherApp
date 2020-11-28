@@ -20,6 +20,9 @@ public interface EducationDao {
     @Update
     void updateWeather(Weather weather);
 
+//    @Query("UPDATE weather SET ")
+//    List<Weather> updateWeatherCity();
+
     @Delete
     void deleteWeather(Weather weather);
 

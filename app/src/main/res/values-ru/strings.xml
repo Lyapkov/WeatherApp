@@ -19,4 +19,6 @@
     <string name="search">Поиск</string>
     <string name="message">Я учусь андроид разработке!</string>
     <string name="button">Успехов!</string>
+    <string name="longitude">Долгота</string>
+    <string name="latitude">Широта</string>
 </resources>

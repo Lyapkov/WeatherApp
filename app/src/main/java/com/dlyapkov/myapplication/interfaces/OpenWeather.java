@@ -10,5 +10,8 @@ public interface OpenWeather {
     Call<WeatherRequest> loadWeather(@Query("q") String cityCountry, @Query("appid") String keyApi);
 
     @GET("data/2.5/weather")
+    Call<WeatherRequest> loadWeatherCoordinates(@Query("lat") String latitude, @Query("lon") String longitude, @Query("appid") String keyApi);
+
+    @GET("data/2.5/weather")
     Call<WeatherRequest> load();
 }

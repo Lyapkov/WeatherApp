@@ -18,14 +18,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textSize="30sp"
-        android:layout_margin="30sp"
+        android:layout_marginTop="50sp"
         android:text="Moscow" />
 
-    <TextView
+    <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
         android:src="@mipmap/night_full_moon_rain" />
 
@@ -33,54 +33,54 @@
         android:id="@+id/pressureView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:text="pressure" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/humidityView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:text="humidity" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tempMinView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:text="temp_min" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tempMaxView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:text="temp_max" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/descriptionView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="0sp"
         android:text="description" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/temperatureView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300sp"
+        android:layout_marginTop="0sp"
         android:layout_gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:text="30 C" />
 
     </LinearLayout>

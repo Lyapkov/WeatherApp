@@ -18,4 +18,6 @@
     <string name="search">Search</string>
     <string name="message">I am learning android development!</string>
     <string name="button">Good luck!</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,18 +13,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,9 +44,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.IOException;
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final int PERMISSION_REQUEST_CODE = 10;
+    private EditText textAddress;
     Marker currentMarker;
     private GoogleMap mMap;
     private GoogleApiClient googleApiClient;
@@ -50,7 +63,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        requestPemissions();
+        initViews();
+        requestPermissions();
         createGoogleApiClient();
         initNotificationChannel();
     }
@@ -61,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         currentMarker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(0, 0))
                 .anchor(0.5f, 0.5f)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher_background))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                 .title("Current position"));
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -72,6 +86,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 createGeofencingRequest(geofence);
             }
         });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                Http.requestRetrofit(marker.getPosition().latitude, marker.getPosition().longitude, BuildConfig.WEATHER_API_KEY);
+
+
+                return false;
+            }
+        });
     }
 
     private Marker addMarker(LatLng location) {
@@ -79,13 +104,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(location)
                 .title(title));
-
         mMap.addCircle(new CircleOptions()
-                .center(location)
-                .radius(150)
-                .strokeColor(Color.BLUE));
-
+                .center(location));
         return marker;
+    }
+
+    private void initViews() {
+        textAddress = findViewById(R.id.searchAddress);
+        initSearchByAddress();
+    }
+
+    private void initSearchByAddress() {
+        findViewById(R.id.searchAddress).setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
+                    searchAddress(v);
+                    return true;
+                }
+                return false;
+            }
+        });
+        findViewById(R.id.buttonSearch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchAddress(v);
+            }
+        });
+    }
+
+    private void searchAddress(View v) {
+        hideKeyboard(v);
+        final Geocoder geocoder = new Geocoder(MapsActivity.this);
+        final String searchText = textAddress.getText().toString();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    List<Address> addresses = geocoder.getFromLocationName(searchText, 1);
+                    if (addresses.size() > 0) {
+                        final LatLng location = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(location)
+                                        .title(searchText)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_current)));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, (float) 15));
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void createGeofencingRequest(Geofence geofence) {
@@ -114,6 +188,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         geoClient.addGeofences(geoFenceRequest, pendingIntent);   // добавляем запрос запрос геозоны и указываем, какой интент будет при этом срабатывать
     }
 
+    private void hideKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm != null)
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
     private Geofence createGeofence(Marker marker) {
         // создаем геозону через построитель.
         return new Geofence.Builder()
@@ -126,47 +206,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
     }
 
-    // Геозоны работают через службы Google Play
-    // поэтому надо создать клиента этой службы
-    // И соединится со службой
     private void createGoogleApiClient() {
-        // Создаем клиента службы GooglePlay
         googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)   // Укажем, что нам нужна геолокация
+                .addApi(LocationServices.API)
                 .build();
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         googleApiClient.connect();
-        // Соединимся со службой
         Log.d("GeoFence", "connect to googleApiClient");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
         googleApiClient.disconnect();
     }
 
-    // Запрос координат
     private void requestLocation() {
-        // Если пермиссии все таки нет - то просто выйдем, приложение не имеет смысла
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
-        // Получить менеджер геолокаций
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        // Будем получать геоположение через каждые 10 секунд или каждые 10 метров
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, new LocationListener() {
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                double lat = location.getLatitude();// Широта
-                double lng = location.getLongitude();// Долгота
-                // Перепестить карту на текущую позицию
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
                 LatLng currentPosition = new LatLng(lat, lng);
                 LatLng prevPosition = currentMarker.getPosition();
                 if (!(prevPosition.longitude == 0 && prevPosition.latitude == 0)) {
@@ -176,51 +243,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .width(5));
                 }
                 currentMarker.setPosition(currentPosition);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, (float) 15));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, (float) 10));
             }
-
         });
     }
 
-    // Запрос пермиссий
-    private void requestPemissions() {
-        // Проверим на пермиссии, и если их нет, запросим у пользователя
+    private void requestPermissions() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // запросим координаты
             requestLocation();
         } else {
-            // пермиссии нет, будем запрашивать у пользователя
             requestLocationPermissions();
         }
     }
 
-    // Запрос пермиссии для геолокации
     private void requestLocationPermissions() {
         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Запросим эти две пермиссии у пользователя
             ActivityCompat.requestPermissions(this,
                     new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.ACCESS_FINE_LOCATION
                     },
                     PERMISSION_REQUEST_CODE);
         }
     }
 
-    // Это результат запроса у пользователя пермиссии
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE) {   // Это та самая пермиссия, что мы запрашивали?
-            if (grantResults.length == 1 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Все препоны пройдены и пермиссия дана
-                // Запросим координаты
+            if (grantResults.length == 2 &&
+                    (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
                 requestLocation();
             }
         }
     }
 
-    // На Андроидах версии 26 и выше необходимо создавать канал нотификации
-    // На старых версиях канал создавать не надо
     private void initNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -229,4 +285,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             notificationManager.createNotificationChannel(mChannel);
         }
     }
+
 }
