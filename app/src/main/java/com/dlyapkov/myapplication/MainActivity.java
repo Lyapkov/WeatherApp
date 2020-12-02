@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +34,8 @@ import com.dlyapkov.myapplication.database.EducationDao;
 import com.dlyapkov.myapplication.database.EducationSource;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.internal.NavigationMenu;
+import com.google.android.material.internal.NavigationMenuItemView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -41,6 +44,9 @@ import com.squareup.picasso.Picasso;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static String FREE = "free";
+    private static String PRO = "pro";
+
     DialogBuilderFragment dlgCustom;
     private boolean isBound = false;
     private EducationSource educationSource;
@@ -112,6 +118,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (getResources().getString(R.string.flavor).equals(FREE)) {
+            Menu menu = navigationView.getMenu();
+            for (int menuItemIndex = 0; menuItemIndex < menu.size(); menuItemIndex++) {
+                MenuItem menuItem= menu.getItem(menuItemIndex);
+                if(menuItem.getItemId() == R.id.nav_maps){
+                    menuItem.setVisible(false);
+                }
+            }
+        }
     }
 
     @Override
@@ -189,6 +205,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void displayError(String error) {
         Snackbar.make(findViewById(R.id.constraintLayout), error, Snackbar.LENGTH_LONG).show();
+    }
+
+    public void updateOrAddWeather(Weather weather) {
+        educationSource.updateOrAddWeather(weather);
     }
 
     public void addWeather(Weather weather) {

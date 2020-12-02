@@ -32,6 +32,9 @@ public interface EducationDao {
     @Query("SELECT * FROM weather")
     List<Weather> getAllWeather();
 
+    @Query("SELECT * FROM weather WHERE city = :city")
+    Weather getWeatherByCity(String city);
+
     @Query("SELECT * FROM weather WHERE id = :id")
     Weather getWeatherById(long id);
 

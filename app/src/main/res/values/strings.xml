@@ -20,4 +20,8 @@
     <string name="button">Good luck!</string>
     <string name="longitude">Longitude</string>
     <string name="latitude">Latitude</string>
+    <string name="exit">Exit</string>
+    <string name="flavor" translatable="false">pro</string>
+    <!-- Strings used for fragments for navigation -->
+
 </resources>

@@ -26,14 +26,23 @@ public class EducationSource {
         return educationDao.getCountWeather();
     }
 
+    public long getIdWeather(Weather weather) {
+        Weather receivedWeather = educationDao.getWeatherById(weather.id);
+        return receivedWeather.id;
+    }
+
     public void addWeather(Weather weather) {
         long id = educationDao.insertWeather(weather);
 
         LoadWeather();
     }
 
-    public void updateWeather(Weather weather) {
-        educationDao.updateWeather(weather);
+    public void updateOrAddWeather(Weather weather) {
+        Weather receivedWeather = educationDao.getWeatherByCity(weather.city);
+        if (receivedWeather != null)
+            educationDao.updateWeather(receivedWeather);
+        else
+            educationDao.insertWeather(weather);
         LoadWeather();
     }
 
