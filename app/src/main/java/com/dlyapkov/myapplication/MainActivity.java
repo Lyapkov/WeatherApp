@@ -1,6 +1,7 @@
 package com.dlyapkov.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,11 +18,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -32,6 +35,11 @@ import com.dlyapkov.myapplication.Services.HttpsService;
 import com.dlyapkov.myapplication.database.App;
 import com.dlyapkov.myapplication.database.EducationDao;
 import com.dlyapkov.myapplication.database.EducationSource;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.internal.NavigationMenu;
@@ -47,16 +55,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String FREE = "free";
     private static String PRO = "pro";
 
+    private static final int RC_SIGN_IN = 40404;
+    private static final String TAG = "GoogleAuth";
+    private GoogleSignInClient googleSignInClient;
+
+    private com.google.android.gms.common.SignInButton buttonSignIn;
+    private Button buttonSignOut;
+    private ImageView iconImage;
+    private TextView textName;
+    private TextView textEmail;
+
     DialogBuilderFragment dlgCustom;
     private boolean isBound = false;
     private EducationSource educationSource;
     private WeatherRecyclerAdapter adapter;
     private BroadcastReceiver internetReceiver = new InternetReceiver();
+    NavigationView navigationView;
 
-    ImageView img;
     TextView city;
     TextView temperature;
-    Button but;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -69,26 +86,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         registerReceiver(internetReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
 
-
         startService(new Intent(this, HttpsService.class));
-
-
-//        ImageView image = findViewById(R.id.image);
-//        Picasso.get()
-//                .load("https://images.unsplash.com/photo-1567449303183-ae0d6ed1498e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80")
-//                //.transform(new CircleTransformation())
-//                .into(image);
-//
-
-
 
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
         dlgCustom = new DialogBuilderFragment();
-        //setImage();
 
         Http.initRetrofit(this);
-        //Http.requestRetrofit("moscow", BuildConfig.WEATHER_API_KEY);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -99,9 +103,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         adapter = new WeatherRecyclerAdapter(educationSource, this);
         recyclerView.setAdapter(adapter);
-
         initGetToken();
         initNotificationChannel();
+        googleAuth();
     }
 
     private Toolbar initToolbar() {
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initDrawer(Toolbar toolbar) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -191,16 +195,115 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    private void googleAuth() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        // Получаем клиента для регистрации и данные по клиенту
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // Кнопка регистрации пользователя
+        View header = navigationView.getHeaderView(0);
+        buttonSignIn = header.findViewById(R.id.sign_in_button);
+        buttonSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });
+
+        buttonSignOut = header.findViewById(R.id.button_sign_out);
+        buttonSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                googleSignOut();
+            }
+        });
+
+        iconImage = header.findViewById(R.id.imageView);
+        textName = header.findViewById(R.id.text_name);
+        textEmail = header.findViewById(R.id.text_email);
+    }
+
+    private void googleSignOut() {
+        googleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        enableSing();
+                    }
+                });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        enableSing();
+        // Проверим, входил ли пользователь в это приложение через Google
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {
+            // Пользователь уже входил, сделаем кнопку недоступной
+            disableSing();
+            // Обновим почтовый адрес этого пользователя и выведем его на экран
+            if (account.getPhotoUrl() != null)
+                updateUI(account.getEmail(), account.getDisplayName(), account.getPhotoUrl().getHost());
+            updateUI(account.getEmail(), account.getDisplayName());
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            // Когда сюда возвращается Task, результаты аутентификации уже
+            // готовы
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Регистрация прошла успешно
+            disableSing();
+            if (account.getPhotoUrl() != null)
+                updateUI(account.getEmail(), account.getDisplayName(), account.getPhotoUrl().getHost());
+            updateUI(account.getEmail(), account.getDisplayName());
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure
+            // reason. Please refer to the GoogleSignInStatusCodes class
+            // reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
+
+    private void signIn() {
+        Intent signIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signIntent, RC_SIGN_IN);
+    }
+
+    private void updateUI(String email, String name, String url) {
+        textEmail.setText(email);
+        textName.setText(name);
+        Picasso.get()
+                .load(url)
+//                .transform(new CircleTransformation())
+                .into(iconImage);
+    }
+
+    private void updateUI(String email, String name) {
+        textEmail.setText(email);
+        textName.setText(name);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, HttpsService.class));
         unregisterReceiver(internetReceiver);
-    }
-
-    public void displayWeather(String textCity, String textTemperature) {
-        city.setText(textCity);
-        temperature.setText(textTemperature);
     }
 
     public void displayError(String error) {
@@ -237,4 +340,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void enableSing() {
+        buttonSignIn.setVisibility(View.VISIBLE);
+        buttonSignOut.setVisibility(View.INVISIBLE);
+        textName.setVisibility(View.INVISIBLE);
+        textEmail.setVisibility(View.INVISIBLE);
+        iconImage.setVisibility(View.INVISIBLE);
+    }
+
+    private void disableSing() {
+        buttonSignIn.setVisibility(View.INVISIBLE);
+        buttonSignOut.setVisibility(View.VISIBLE);
+        textName.setVisibility(View.VISIBLE);
+        textEmail.setVisibility(View.VISIBLE);
+        iconImage.setVisibility(View.VISIBLE);
+    }
 }

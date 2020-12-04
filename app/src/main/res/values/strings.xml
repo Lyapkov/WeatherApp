@@ -2,8 +2,8 @@
     <string name="app_name">Weather</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Dmitry Lyapkov</string>
-    <string name="nav_header_subtitle">Lyapkov.Dmitry@gmail.com</string>
+    <string name="nav_header_title">123123123</string>
+    <string name="nav_header_subtitle">gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -21,6 +21,7 @@
     <string name="longitude">Longitude</string>
     <string name="latitude">Latitude</string>
     <string name="exit">Exit</string>
+    <string name="singIn">Sing in</string>
     <string name="flavor" translatable="false">pro</string>
     <!-- Strings used for fragments for navigation -->
 

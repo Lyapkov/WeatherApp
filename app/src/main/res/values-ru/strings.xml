@@ -21,5 +21,6 @@
     <string name="button">Успехов!</string>
     <string name="longitude">Долгота</string>
     <string name="latitude">Широта</string>
+    <string name="singIn">Войти</string>
     <string name="exit">Выход</string>
 </resources>
