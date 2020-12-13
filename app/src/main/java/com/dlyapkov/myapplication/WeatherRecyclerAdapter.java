@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dlyapkov.myapplication.Entity.Weather;
 import com.dlyapkov.myapplication.database.EducationSource;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -40,13 +41,19 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherRecycler
         List<Weather> weathers = dataSource.getWeather();
         Weather weather = weathers.get(position);
         holder.city.setText(weather.city);
-        holder.temperature.setText(Integer.toString((int) weather.temp));
+        holder.temperature.setText(Integer.toString((int) weather.temp - 273));
         holder.pressure.setText(Integer.toString(weather.pressure));
         holder.humidity.setText(Integer.toString(weather.humidity));
-        holder.temp_min.setText(Integer.toString((int) weather.temp_min));
-        holder.temp_max.setText(Integer.toString((int) weather.temp_max));
+        holder.temp_min.setText(Integer.toString((int) weather.temp_min - 273));
+        holder.temp_max.setText(Integer.toString((int) weather.temp_max - 273));
         holder.description.setText(weather.description);
-        holder.icon.setText(weather.icon);
+        //holder.icon.setText(weather.icon);
+
+        Picasso.get()
+                .load(weather.icon)
+                .transform(new CircleTransformation())
+                .into(holder.icon);
+
 
         if (activity != null)
             activity.registerForContextMenu(holder.cardView);
@@ -69,7 +76,7 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherRecycler
     TextView temp_min;
     TextView temp_max;
     TextView description;
-    TextView icon;
+    ImageView icon;
 
     View cardView;
 

@@ -9,11 +9,9 @@
     <string name="action_settings">Настройки</string>
 
     <string name="menu_home">Домой</string>
-    <string name="menu_gallery">Галерея</string>
-    <string name="menu_slideshow">Слайд-шоу</string>
+    <string name="menu_maps">Карта</string>
     <string name="menu_settings">Настройки</string>
     <string name="menu_about_developer">О разработчике</string>
-    <string name="menu_send">Отправить</string>
     <string name="add">Добавить</string>
     <string name="update">Обновить</string>
     <string name="remove">Удалить</string>
@@ -21,4 +19,8 @@
     <string name="search">Поиск</string>
     <string name="message">Я учусь андроид разработке!</string>
     <string name="button">Успехов!</string>
+    <string name="longitude">Долгота</string>
+    <string name="latitude">Широта</string>
+    <string name="singIn">Войти</string>
+    <string name="exit">Выход</string>
 </resources>
