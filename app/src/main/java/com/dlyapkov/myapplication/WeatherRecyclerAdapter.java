@@ -41,11 +41,11 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherRecycler
         List<Weather> weathers = dataSource.getWeather();
         Weather weather = weathers.get(position);
         holder.city.setText(weather.city);
-        holder.temperature.setText(Integer.toString((int) weather.temp - 273));
-        holder.pressure.setText(Integer.toString(weather.pressure));
-        holder.humidity.setText(Integer.toString(weather.humidity));
-        holder.temp_min.setText(Integer.toString((int) weather.temp_min - 273));
-        holder.temp_max.setText(Integer.toString((int) weather.temp_max - 273));
+        holder.temperature.setText(Integer.toString((int) weather.temp - 273) + " \u00B0C");
+        holder.pressure.setText(Integer.toString(weather.pressure) + " hpa");
+        holder.humidity.setText(Integer.toString(weather.humidity) + " %");
+        holder.temp_min.setText(Integer.toString((int) weather.temp_min - 273) + " \u00B0C");
+        holder.temp_max.setText(Integer.toString((int) weather.temp_max - 273) + " \u00B0C");
         holder.description.setText(weather.description);
         //holder.icon.setText(weather.icon);
 
@@ -83,13 +83,13 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherRecycler
     public ViewHolder(@NonNull View itemView) {
         super(itemView);
         cardView = itemView;
-        city = cardView.findViewById(R.id.textCity);
-        temperature = cardView.findViewById(R.id.temperatureView);
-        pressure = cardView.findViewById(R.id.pressureView);
-        humidity = cardView.findViewById(R.id.humidityView);
-        temp_min = cardView.findViewById(R.id.tempMinView);
-        temp_max = cardView.findViewById(R.id.tempMaxView);
-        description = cardView.findViewById(R.id.descriptionView);
+        city = cardView.findViewById(R.id.text_city);
+        temperature = cardView.findViewById(R.id.temperature_view);
+        pressure = cardView.findViewById(R.id.pressure_view);
+        humidity = cardView.findViewById(R.id.humidity_view);
+        temp_min = cardView.findViewById(R.id.temp_min_view);
+        temp_max = cardView.findViewById(R.id.temp_max_view);
+        description = cardView.findViewById(R.id.description_view);
         icon = cardView.findViewById(R.id.imageView);
     }
 }

@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dlyapkov.myapplication.Entity.Weather;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "GoogleAuth";
     private GoogleSignInClient googleSignInClient;
 
+    private LinearLayout linerNavBar;
     private com.google.android.gms.common.SignInButton buttonSignIn;
     private Button buttonSignOut;
     private ImageView iconImage;
@@ -72,17 +74,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BroadcastReceiver internetReceiver = new InternetReceiver();
     NavigationView navigationView;
 
-    TextView city;
-    TextView temperature;
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        city = findViewById(R.id.textView2);
-        temperature = findViewById(R.id.textView3);
 
         registerReceiver(internetReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
 
@@ -203,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Получаем клиента для регистрации и данные по клиенту
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Кнопка регистрации пользователя
         View header = navigationView.getHeaderView(0);
+        linerNavBar = (LinearLayout) header.findViewById(R.id.layout_nav_bar);
         buttonSignIn = header.findViewById(R.id.sign_in_button);
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             disableSing();
             // Обновим почтовый адрес этого пользователя и выведем его на экран
             if (account.getPhotoUrl() != null)
-                updateUI(account.getEmail(), account.getDisplayName(), account.getPhotoUrl().getHost());
+                updateUI(account.getEmail(), account.getDisplayName(), String.valueOf(account.getPhotoUrl()));
             updateUI(account.getEmail(), account.getDisplayName());
         }
     }
@@ -269,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             // Регистрация прошла успешно
             disableSing();
+            Log.d("QWEQWEQWWE", String.valueOf(account.getPhotoUrl()));
             if (account.getPhotoUrl() != null)
                 updateUI(account.getEmail(), account.getDisplayName(), account.getPhotoUrl().getHost());
             updateUI(account.getEmail(), account.getDisplayName());
@@ -290,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         textName.setText(name);
         Picasso.get()
                 .load(url)
-//                .transform(new CircleTransformation())
+              //  .transform(new CircleTransformation())
                 .into(iconImage);
     }
 
@@ -341,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void enableSing() {
+        linerNavBar.setVisibility(View.INVISIBLE);
         buttonSignIn.setVisibility(View.VISIBLE);
         buttonSignOut.setVisibility(View.INVISIBLE);
         textName.setVisibility(View.INVISIBLE);
@@ -349,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void disableSing() {
+        linerNavBar.setVisibility(View.VISIBLE);
         buttonSignIn.setVisibility(View.INVISIBLE);
         buttonSignOut.setVisibility(View.VISIBLE);
         textName.setVisibility(View.VISIBLE);
